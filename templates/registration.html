@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Registration</title>
+  <link rel="stylesheet">
+  <link rel="stylesheet" href="static/login.css">
+
+  <script src="static/js/jquery.min.js"></script>
+  <script src="static/js/sweetalert2.js"></script>
+
+</head>
+
+<body>
+  <!-- partial:index.partial.html -->
+  <section class='login' id='login'>
+    <div class='head'>
+      <h1 class='company'>ZeroHate Registration</h1>
+    </div>
+    <p class='msg'>Welcome back ZeroHate</p>
+    <div class='form'>
+      <form>
+        <input type="text" placeholder='Name' class='text' id='name' required><br><br>
+        <input type="text" placeholder='Email' class='text' id='email' required><br>
+        <input type="password" placeholder='Password' class='password' id="psw" required><br>
+        <button href="#" class='btn-login' id='btn'>Registration</button>
+        <a href="/login" class='forgot'>Login?</a>
+      </form>
+    </div>
+  </section>
+
+
+  <script>
+
+    $(function () {
+      $('#btn').click(function () {
+
+        var name = $('#name').val();
+        var email = $('#email').val();
+        var psw = $('#psw').val();
+
+        if (name == "" || email == "" || psw == "") {
+          swal.fire("Registration", "Fields are empty!", "warning");
+
+        } else {
+
+          var form_data = new FormData();
+          form_data.append('name', name);
+          form_data.append('email', email);
+          form_data.append('psw', psw);
+
+          $.ajax({
+            url: "/user_registration",
+            enctype: 'multipart/form-data',
+            data: form_data,
+            contentType: false,
+            cache: false,
+            processData: false,
+            type: 'POST',
+          })
+            .done(function (data) {
+              if (data.redirect) {
+                window.location.href = data.redirect;
+              }
+              else if (data.success) {
+                $('#name').val('');
+                $('#email').val('');
+                $('#psw').val('');
+                Swal.fire("Registration", data.success, "success");
+              }
+              else if (data.error) {
+                Swal.fire("Registration", data.error, "warning");
+              }
+              else {
+                Swal.fire("Registration", "Some error occur!", "warning");
+              }
+            });
+
+        }
+
+        event.preventDefault();
+      });
+    });
+
+  </script>
+
+</body>
+
+</html>

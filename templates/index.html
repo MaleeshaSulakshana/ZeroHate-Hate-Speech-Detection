@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZeroHate</title>
+  <link rel="stylesheet" href="static/index.css">
+  <script src="https://kit.fontawesome.com/c4254e24a8.js" crossorigin="anonymous"></script>
+
+  <script src="static/js/jquery.min.js"></script>
+  <script src="static/js/sweetalert2.js"></script>
+
+</head>
+
+<body>
+
+  <nav>
+    <div class="nav-left">
+      <a href="index.html"><img src="static/images/logo2.png" class="logo"></a>
+      <ul>
+
+        <li><img src="static/images/notification.png"></li>
+        <li><img src="static/images/inbox.png"></li>
+        <li><img src="static/images/video.png"></li>
+      </ul>
+    </div>
+
+    <div class="nav-right">
+      <div class="nav-user-icon online">
+        <a href="/logout">
+          <img src="static/images/logout.png">
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="left-sidebar">
+      <div class="imp-links">
+        <a href="#"><img src="static/images/news.png"> Latest News</a>
+        <a href="#"><img src="static/images/friends.png"> Friends</a>
+        <a href="#"><img src="static/images/group.png"> Groups</a>
+        <a href="#"><img src="static/images/marketplace.png"> Marketplace</a>
+        <a href="#"><img src="static/images/watch.png"> Watch</a>
+        <a href="#">See More</a>
+      </div>
+      <div class="shortcut-links">
+        <p>Your Shortcuts</p>
+        <a href="#"><img src="static/images/shortcut-1.png"> Informatics Institute of Technology (IIT)</a>
+        <a href="#"><img src="static/images/shortcut-2.png"> University of Westminster</a>
+        <a href="#"><img src="static/images/shortcut-3.png"> Full Stack Development</a>
+
+      </div>
+    </div>
+
+    <!----------------- middle content--------- -->
+    <div class="main-content">
+
+      <div class="post-container">
+        <div class="post-row">
+          <div class="user-profile">
+            <img src="static/images/profile-pic.png">
+            <div>
+              <p>Sandaru Munasinghe</p>
+              <span>June 24 2022</span>
+            </div>
+          </div>
+
+        </div>
+        <p class="post-text">This is a sample caption for Final Project</a></p>
+        <img src="static/images/feed-image-1.png" class="post-img">
+        <div class="post-row">
+          <div class="activity-icons">
+            <div><img src="static/images/like-blue.png"> 120</div>
+            <div><img src="static/images/share.png"> 20</div>
+          </div>
+        </div>
+
+        <section id="wrapper">
+          <div class="box">
+            <div class="row">
+              <div class="col-6">
+                <div class="comment">
+                  <!-- <p v-for="items in item" v-text="items"></p> -->
+
+                  {% if comments %}
+                  {% for comment in comments %}
+                  <div style="margin-top: 10px;">
+                    <p><b>{{ comment[1] }}</b></p>
+                    <p style="margin-left: 15px; margin-top: 5px;">{{ comment[2] }}</p>
+                  </div>
+                  {% endfor %}
+                  {% endif %}
+
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-6">
+                  <textarea type="text" class="input" placeholder="Your Comment Here" id="comment"></textarea>
+                  <button class='btn-box' id="btn" type="submit">Post Comment</button>
+                </div>
+              </div>
+            </div>
+        </section>
+
+        <div class="post-row">
+          <div class="user-profile">
+            <img src="static/images/profile-pic.png">
+            <div>
+              <p>Sandaru Munasinghe</p>
+              <span>June 24 2022</span>
+            </div>
+          </div>
+
+        </div>
+        <p class="post-text">This is a sample caption for Final Project</a></p>
+        <img src="static/images/feed-image-1.png" class="post-img">
+        <div class="post-row">
+          <div class="activity-icons">
+            <div><img src="static/images/like-blue.png"> 120</div>
+            <div><img src="static/images/share.png"> 20</div>
+          </div>
+        </div>
+      </div>
+
+
+
+      <button type="button" class="load-more-btn">Load More</button>
+
+    </div>
+    <!-- ----------right sidebar----------- -->
+
+  </div>
+  <script src="script.js"></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.14/vue.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js'></script>
+
+  <script>
+
+    $(function () {
+      $('#btn').click(function () {
+
+        var comment = $('#comment').val();
+
+        if (comment == "") {
+          swal.fire("Add Comment", "Fields are empty!", "warning");
+
+        } else {
+
+          var form_data = new FormData();
+          form_data.append('comment', comment);
+
+          Swal.fire({
+            title: 'Waiting for submit comment!',
+            imageUrl: "static/images/hourglass.gif",
+            showConfirmButton: false,
+            closeOnClickOutside: false,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+          });
+
+          $.ajax({
+            url: "/add_comment",
+            enctype: 'multipart/form-data',
+            data: form_data,
+            contentType: false,
+            cache: false,
+            processData: false,
+            type: 'POST',
+          })
+            .done(function (data) {
+
+              swal.close();
+
+              if (data.redirect) {
+                window.location.href = data.redirect;
+              }
+              else if (data.success) {
+                $('#comment').val('');
+                Swal.fire("Add Comment", data.success, "success");
+                window.location.reload();
+              }
+              else if (data.error) {
+                Swal.fire("Add Comment", data.error, "warning");
+              }
+              else {
+                Swal.fire("Add Comment", "Some error occur!", "warning");
+              }
+            });
+
+        }
+
+        event.preventDefault();
+      });
+    });
+
+  </script>
+
+
+</body>
+
+</html>
